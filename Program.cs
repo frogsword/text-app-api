@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TextApp.Data;
+using TextApp.Interfaces;
 using TextApp.Models;
+using TextApp.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -37,6 +40,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddSignalR();
 
+builder.Services.AddScoped<IMessageInterface, MessageRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,6 +50,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(builder => builder
+    .WithOrigins("https://localhost:3000")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
 
 app.UseHttpsRedirection();
 

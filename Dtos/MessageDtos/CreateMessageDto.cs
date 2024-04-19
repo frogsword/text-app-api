@@ -7,5 +7,11 @@ namespace TextApp.Dtos.MessageDtos
         [Required]
         [MinLength(1)]
         public string Body { get; set; }
+
+        [Required]
+        public Guid Sender { get; set; }
+
+        [Required]
+        public Guid Receiver { get; set; }
     }
 }

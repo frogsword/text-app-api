@@ -12,5 +12,6 @@ namespace TextApp.Models
         public Guid Receiver { get; set; }
 
         public string Body { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
