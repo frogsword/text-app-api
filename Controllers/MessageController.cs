@@ -22,7 +22,7 @@ namespace TextApp.Controllers
 
         [HttpGet]
         [Route("{senderId:guid}/{receiverId:guid}")]
-        [Authorize]
+        //[Authorize]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> GetMessages([FromRoute] Guid senderId, [FromRoute] Guid receiverId)
         {

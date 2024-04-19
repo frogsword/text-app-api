@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TextApp.Dtos.UserDtos;
 using TextApp.Models;
@@ -29,6 +30,23 @@ namespace TextApp.Controllers
             passwordValidator = passwordVal;
             userValidator = userValid;
             signInManager = signinMgr;
+        }
+
+        [HttpGet("{id:guid}")]
+        [Authorize]
+        public async Task<IActionResult> GetUser([FromRoute] string id)
+        {
+            AppUser user = await userManager.FindByIdAsync(id);
+
+            if (user != null)
+            {
+                return Ok(user);
+            }
+            else
+            {
+                return BadRequest();
+            }
+
         }
 
         [HttpPost("login")]
