@@ -12,8 +12,8 @@ using TextApp.Data;
 namespace TextApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240419201810_message-date")]
-    partial class messagedate
+    [Migration("20240420161053_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -232,7 +232,11 @@ namespace TextApp.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ProfileUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("Receiver")
                         .HasColumnType("uuid");
@@ -242,7 +246,35 @@ namespace TextApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProfileUserId");
+
                     b.ToTable("Message");
+                });
+
+            modelBuilder.Entity("TextApp.Models.Profile", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid[]>("Blocks")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid[]>("Contacts")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
+                    b.Property<byte[]>("Picture")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -293,6 +325,34 @@ namespace TextApp.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TextApp.Models.Message", b =>
+                {
+                    b.HasOne("TextApp.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("TextApp.Models.Profile", b =>
+                {
+                    b.HasOne("TextApp.Models.AppUser", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("TextApp.Models.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TextApp.Models.AppUser", b =>
+                {
+                    b.Navigation("Profile")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

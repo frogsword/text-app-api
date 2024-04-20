@@ -4,5 +4,6 @@ namespace TextApp.Models
 {
     public class AppUser : IdentityUser
     {
+        public Profile Profile { get; set; }
     }
 }

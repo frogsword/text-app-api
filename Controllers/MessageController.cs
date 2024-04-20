@@ -15,7 +15,10 @@ namespace TextApp.Controllers
     {
         private readonly IMessageInterface _messageRepo;
 
-        public MessageController(IMessageInterface messageRepo)
+        public MessageController
+        (
+            IMessageInterface messageRepo
+        )
         {
             _messageRepo = messageRepo;
         }

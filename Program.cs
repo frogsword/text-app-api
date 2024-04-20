@@ -41,6 +41,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IMessageInterface, MessageRepository>();
+builder.Services.AddScoped<IProfileInterface, ProfileRepository>();
 
 var app = builder.Build();
 

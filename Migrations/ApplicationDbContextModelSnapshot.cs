@@ -242,6 +242,29 @@ namespace TextApp.Migrations
                     b.ToTable("Message");
                 });
 
+            modelBuilder.Entity("TextApp.Models.Profile", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid[]>("Blocks")
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid[]>("Contacts")
+                        .HasColumnType("uuid[]");
+
+                    b.Property<byte[]>("Picture")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Profiles");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -290,6 +313,23 @@ namespace TextApp.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TextApp.Models.Profile", b =>
+                {
+                    b.HasOne("TextApp.Models.AppUser", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("TextApp.Models.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TextApp.Models.AppUser", b =>
+                {
+                    b.Navigation("Profile")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
