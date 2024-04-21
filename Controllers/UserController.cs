@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TextApp.Data;
-using TextApp.Dtos.MessageDtos;
 using TextApp.Dtos.ProfileDtos;
 using TextApp.Dtos.UserDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
 using TextApp.Models;
-using TextApp.Repositories;
 
 namespace TextApp.Controllers
 {
@@ -39,6 +36,13 @@ namespace TextApp.Controllers
             userValidator = userValid;
             signInManager = signinMgr;
             _profileRepo = profileRepo;
+        }
+
+        [HttpGet("authenticate")]
+        public async Task<IActionResult> Authenticate()
+        {
+            var isAuthenticated = User.Identity.IsAuthenticated;
+            return Ok(isAuthenticated);
         }
 
         [HttpGet("{id:guid}")]
