@@ -4,9 +4,9 @@ namespace TextApp.Hubs
 {
     public class TextHub : Hub
     {
-        public async Task SendMessage(string user, string message)
+        public async Task SendMessage(string sender, string receiver, string message)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.All.SendAsync("ReceiveMessage", sender, receiver, message);
         }
     }
 }

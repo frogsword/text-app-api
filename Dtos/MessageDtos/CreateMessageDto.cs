@@ -9,9 +9,9 @@ namespace TextApp.Dtos.MessageDtos
         public string Body { get; set; }
 
         [Required]
-        public Guid Sender { get; set; }
+        public Guid SenderId { get; set; }
 
         [Required]
-        public Guid Receiver { get; set; }
+        public Guid GroupId { get; set; }
     }
 }

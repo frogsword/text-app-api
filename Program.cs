@@ -22,13 +22,13 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.Configure<IdentityOptions>(opts =>
+builder.Services.Configure<IdentityOptions>(options =>
 {
-    opts.User.RequireUniqueEmail = true;
-    opts.Password.RequiredLength = 8;
-    opts.Password.RequireDigit = true;
-    opts.Password.RequireNonAlphanumeric = true;
-    opts.Password.RequireUppercase = true;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -38,10 +38,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
-builder.Services.AddSignalR();
-
 builder.Services.AddScoped<IMessageInterface, MessageRepository>();
 builder.Services.AddScoped<IProfileInterface, ProfileRepository>();
+builder.Services.AddScoped<IGroupInterface, GroupRepository>();
 
 var app = builder.Build();
 

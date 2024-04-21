@@ -10,8 +10,8 @@ namespace TextApp.Mappers
             return new Message
             {
                 Body = messageDto.Body,
-                Sender = messageDto.Sender,
-                Receiver = messageDto.Receiver
+                Sender = messageDto.SenderId,
+                GroupId = messageDto.GroupId
             };
         }
     }

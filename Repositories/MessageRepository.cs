@@ -14,21 +14,9 @@ namespace TextApp.Repositories
             _context = context;
         }
 
-        public async Task<List<Message>> GetAsync(Guid senderId, Guid receiverId)
+        public async Task<List<Message>> GetAsync(Guid groupId)
         {
-            var senderMessages = await _context.Messages
-                .Where((m => m.Sender == senderId && m.Receiver == receiverId))
-                .OrderBy(m => m.CreatedAt)
-                .ToListAsync();
-
-            var receiverMessages = await _context.Messages
-                .Where((m => m.Sender == receiverId && m.Receiver == senderId))
-                .OrderBy(m => m.CreatedAt)
-                .ToListAsync();
-
-            senderMessages.AddRange(receiverMessages);
-
-            List<Message> messages = senderMessages.OrderBy(m => m.CreatedAt).ToList();
+            var messages = await _context.Messages.Where(m => m.GroupId == groupId).ToListAsync();
 
             return messages;
         }

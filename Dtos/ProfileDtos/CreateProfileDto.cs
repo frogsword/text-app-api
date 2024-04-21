@@ -19,6 +19,8 @@ namespace TextApp.Dtos.ProfileDtos
 
         public Guid[] Blocks { get; set; }
 
+        public Guid[] Groups { get; set; }
+
         [Required]
         public AppUser User { get; set; }
 

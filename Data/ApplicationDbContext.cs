@@ -14,6 +14,7 @@ namespace TextApp.Data
         }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

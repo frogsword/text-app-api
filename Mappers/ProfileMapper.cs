@@ -1,5 +1,4 @@
-﻿using TextApp.Dtos.MessageDtos;
-using TextApp.Dtos.ProfileDtos;
+﻿using TextApp.Dtos.ProfileDtos;
 using TextApp.Models;
 
 namespace TextApp.Mappers

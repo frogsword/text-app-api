@@ -9,7 +9,7 @@ using TextApp.Models;
 
 namespace TextApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/messages")]
     [ApiController]
     public class MessageController : ControllerBase
     {
@@ -24,19 +24,17 @@ namespace TextApp.Controllers
         }
 
         [HttpGet]
-        [Route("{senderId:guid}/{receiverId:guid}")]
+        [Route("{groupId:guid}")]
         //[Authorize]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetMessages([FromRoute] Guid senderId, [FromRoute] Guid receiverId)
+        public async Task<IActionResult> GetMessages([FromRoute] Guid groupId)
         {
-            var messages = await _messageRepo.GetAsync(senderId, receiverId);
+            var messages = await _messageRepo.GetAsync(groupId);
 
             return Ok(messages);
         }
 
         [HttpPost]
         [Authorize]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAsync([FromBody] CreateMessageDto createMessageDto)
         {
             if (ModelState.IsValid)

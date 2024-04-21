@@ -9,6 +9,7 @@ namespace TextApp.Models
         public byte[]? Picture { get; set; }
         public Guid[]? Contacts { get; set; }
         public Guid[]? Blocks { get; set; }
+        public Guid[]? Groups { get; set; }
         public AppUser User { get; set; }
     }
 }
