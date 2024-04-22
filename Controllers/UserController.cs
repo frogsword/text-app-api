@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TextApp.Dtos.ProfileDtos;
@@ -6,6 +8,7 @@ using TextApp.Dtos.UserDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
 using TextApp.Models;
+using TextApp.Services;
 
 namespace TextApp.Controllers
 {
@@ -42,7 +45,34 @@ namespace TextApp.Controllers
         public async Task<IActionResult> Authenticate()
         {
             var isAuthenticated = User.Identity.IsAuthenticated;
-            return Ok(isAuthenticated);
+
+            if (isAuthenticated)
+            {
+                if (Request.Cookies["user_id"] != null)
+                {
+                    var userId = Request.Cookies["user_id"];
+
+                    try
+                    {
+                        //set as secret
+                        var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+
+                        var decryptedString = AesService.DecryptString(key, userId);
+
+                        var user = await userManager.FindByIdAsync(decryptedString);
+                        return Ok(user.UserName);
+                    }
+                    catch 
+                    {
+                        return Ok(false);
+                    }
+                }
+                else
+                {
+                    return Ok(false);
+                }
+            }
+            return Ok(false);
         }
 
         [HttpGet("{id:guid}")]
@@ -72,11 +102,28 @@ namespace TextApp.Controllers
                     await signInManager.SignOutAsync();
                     Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, loginDto.Password, false, false);
                     if (result.Succeeded)
-                        return Ok(appUser);
+                    {
+                        //set as secret
+                        var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+
+                        var encryptedId = AesService.EncryptString(key, appUser.Id);
+                        Response.Cookies.Append("user_id", encryptedId);
+                        return Ok();
+                    }
                 }
                 ModelState.AddModelError(nameof(loginDto.Email), "Login Failed: Invalid Email or password");
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            //clear cookies
+            Response.Cookies.Delete("user_id");
+            Response.Cookies.Delete(".AspNetCore.Identity.Application");
+
+            return Ok();
         }
 
         [HttpPost("register")]
