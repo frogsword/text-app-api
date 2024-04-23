@@ -34,6 +34,16 @@ namespace TextApp.Controllers
             return Ok(groups);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateGroup([FromBody] CreateGroupDto groupDto)
+        {
+            Group group = groupDto.ToGroupFromCreateDto();
+
+            var result = await _groupRepo.UpdateGroupAsync(group);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] CreateGroupDto createGroupDto)
         {
@@ -48,10 +58,9 @@ namespace TextApp.Controllers
                 for (var i = 0; i < group.Members.Length; i++)
                 {
                     string memberId = group.Members[i].ToString();
-                    await _profileRepo.UpdateProfileGroupsAsync(groupId, memberId);
+                    await _profileRepo.AddGroupToProfileAsync(groupId, memberId);
                 }
 
-                //returns group object with id and members
                 return Ok(group);
             }
             else

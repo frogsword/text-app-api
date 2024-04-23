@@ -28,7 +28,7 @@ namespace TextApp.Repositories
             return profileModel;
         }
 
-        public async Task UpdateProfileGroupsAsync(Guid groupId, string userId)
+        public async Task AddGroupToProfileAsync(Guid groupId, string userId)
         {
             Profile? profile = await _context.Profiles.FindAsync(userId);
 
@@ -42,6 +42,15 @@ namespace TextApp.Repositories
             {
                 profile.Groups = [.. groups, groupId];
             }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveGroupFromProfileAsync(string userId, List<Guid> groupIds)
+        {
+            Profile profile = await _context.Profiles.FindAsync(userId);
+
+            profile.Groups = groupIds.ToArray();
 
             await _context.SaveChangesAsync();
         }

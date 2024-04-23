@@ -6,6 +6,7 @@ namespace TextApp.Interfaces
     {
         Task<Profile> GetAsync(string userId);
         Task<Profile> CreateAsync(Profile profileModel);
-        Task UpdateProfileGroupsAsync(Guid groupId, string userId);
+        Task AddGroupToProfileAsync(Guid groupId, string userId);
+        Task RemoveGroupFromProfileAsync(string userId, List<Guid> groupIds);
     }
 }
