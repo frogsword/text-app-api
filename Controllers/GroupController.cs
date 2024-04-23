@@ -4,6 +4,7 @@ using TextApp.Dtos.GroupDtos;
 using TextApp.Dtos.MessageDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
+using TextApp.Models;
 
 namespace TextApp.Controllers
 {
@@ -12,13 +13,16 @@ namespace TextApp.Controllers
     public class GroupController : ControllerBase
     {
         private readonly IGroupInterface _groupRepo;
+        private readonly IProfileInterface _profileRepo;
 
         public GroupController
         (
-            IGroupInterface groupRepo
+            IGroupInterface groupRepo,
+            IProfileInterface profileRepo
         )
         {
             _groupRepo = groupRepo;
+            _profileRepo = profileRepo;
         }
 
         [HttpPost]
@@ -28,9 +32,18 @@ namespace TextApp.Controllers
             {
                 var groupModel = createGroupDto.ToGroupFromCreateDto();
 
-                await _groupRepo.CreateAsync(groupModel);
+                Group group = await _groupRepo.CreateAsync(groupModel);
 
-                return Ok(groupModel);
+                //add to profiles
+                Guid groupId = group.Id;
+                for (var i = 0; i < group.Members.Length; i++)
+                {
+                    string memberId = group.Members[i].ToString();
+                    await _profileRepo.UpdateProfileGroupsAsync(groupId, memberId);
+                }
+
+                //returns group object with id and members
+                return Ok(group);
             }
             else
             {

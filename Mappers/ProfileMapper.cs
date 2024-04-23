@@ -14,6 +14,7 @@ namespace TextApp.Mappers
                 Picture = profileDto.Picture,
                 Contacts = profileDto.Contacts,
                 Blocks = profileDto.Blocks,
+                Groups = profileDto.Groups,
                 User = profileDto.User,
             };
         }

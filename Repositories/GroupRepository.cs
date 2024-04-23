@@ -1,4 +1,5 @@
-﻿using TextApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using TextApp.Data;
 using TextApp.Interfaces;
 using TextApp.Models;
 
@@ -15,10 +16,11 @@ namespace TextApp.Repositories
 
         public async Task<Group> CreateAsync(Group groupModel)
         {
-            await _context.Groups.AddAsync(groupModel);
+            var group = await _context.Groups.AddAsync(groupModel);
+
             await _context.SaveChangesAsync();
 
-            return groupModel;
+            return group.Entity;
         }
     }
 }

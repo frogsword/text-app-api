@@ -60,7 +60,14 @@ namespace TextApp.Controllers
                         var decryptedString = AesService.DecryptString(key, userId);
 
                         var user = await userManager.FindByIdAsync(decryptedString);
-                        return Ok(user.UserName);
+
+                        var response = new
+                        {
+                            isAuthenticated = true,
+                            name = user.UserName,
+                        };
+
+                        return Ok(response);
                     }
                     catch 
                     {
@@ -119,7 +126,6 @@ namespace TextApp.Controllers
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
-            //clear cookies
             Response.Cookies.Delete("user_id");
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
 
@@ -156,6 +162,7 @@ namespace TextApp.Controllers
                         Picture = null,
                         Contacts = null,
                         Blocks = null,
+                        Groups = null,
                         User = user,
                     };
 
