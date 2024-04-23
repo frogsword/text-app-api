@@ -5,6 +5,7 @@ using TextApp.Dtos.MessageDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
 using TextApp.Models;
+using TextApp.Services;
 
 namespace TextApp.Controllers
 {
@@ -23,6 +24,14 @@ namespace TextApp.Controllers
         {
             _groupRepo = groupRepo;
             _profileRepo = profileRepo;
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> GetUserGroups([FromBody] List<Guid> userGroupIds)
+        {
+            List<Group> groups = await _groupRepo.GetUserGroupsAsync(userGroupIds);
+
+            return Ok(groups);
         }
 
         [HttpPost]

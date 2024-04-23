@@ -20,11 +20,12 @@ namespace TextApp.Controllers
             _profileRepo = profileRepo;
         }
 
-        [HttpGet("{userId:guid}")]
-        public async Task<IActionResult> GetProfile([FromRoute] string userId)
+        [HttpGet("user")]
+        public async Task<IActionResult> GetProfile()
         {
             try
             {
+                var userId = Request.Cookies["user_id"];
                 //set as secret
                 var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
 

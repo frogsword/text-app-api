@@ -6,5 +6,8 @@ namespace TextApp.Dtos.GroupDtos
     {
         [Required]
         public Guid[] Members { get; set; }
+
+        [Required] 
+        public string Name { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextApp.Data;
 using TextApp.Interfaces;
+using TextApp.Migrations;
 using TextApp.Models;
 
 namespace TextApp.Repositories
@@ -12,6 +13,18 @@ namespace TextApp.Repositories
         public GroupRepository(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<Group>> GetUserGroupsAsync(List<Guid> userGroupIds)
+        {
+            List<Group> groups = [];
+            for (int i = 0; i < userGroupIds.Count; i++)
+            {
+               Group group = await _context.Groups.FindAsync(userGroupIds.ElementAt(i));
+               groups = [.. groups, group];
+            }
+
+            return groups;
         }
 
         public async Task<Group> CreateAsync(Group groupModel)

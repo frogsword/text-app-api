@@ -11,6 +11,7 @@ namespace TextApp.Mappers
             return new Group
             {
                 Members = groupDto.Members,
+                Name = groupDto.Name,
             };
         }
     }
