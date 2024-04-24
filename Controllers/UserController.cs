@@ -30,7 +30,7 @@ namespace TextApp.Controllers
             IPasswordValidator<AppUser> passwordVal,
             IUserValidator<AppUser> userValid,
             SignInManager<AppUser> signinMgr,
-            IProfileInterface profileRepo
+            IProfileInterface profileRepo,
         )
         {
             passwordHasher = passwordHash;
@@ -59,12 +59,15 @@ namespace TextApp.Controllers
 
                         var decryptedString = AesService.DecryptString(key, userId);
 
-                        var user = await userManager.FindByIdAsync(decryptedString);
+                        //var user = await userManager.FindByIdAsync(decryptedString);
+                        var user = await _profileRepo.GetAsync(decryptedString);
 
                         var response = new
                         {
                             isAuthenticated = true,
-                            name = user.UserName,
+                            name = user.Username,
+                            groups = user.Groups,
+                            profilePicture = user.Picture,
                         };
 
                         return Ok(response);
@@ -80,22 +83,6 @@ namespace TextApp.Controllers
                 }
             }
             return Ok(false);
-        }
-
-        [HttpGet("{id:guid}")]
-        [Authorize]
-        public async Task<IActionResult> GetUser([FromRoute] string id)
-        {
-            AppUser user = await userManager.FindByIdAsync(id);
-
-            if (user != null)
-            {
-                return Ok(user);
-            }
-            else
-            {
-                return BadRequest();
-            }
         }
 
         [HttpPost("login")]

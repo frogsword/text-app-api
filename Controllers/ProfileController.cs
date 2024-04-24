@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TextApp.Interfaces;
+using TextApp.Migrations;
 using TextApp.Models;
 using TextApp.Services;
 
@@ -21,6 +23,7 @@ namespace TextApp.Controllers
         }
 
         [HttpGet("user")]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
             try
@@ -40,7 +43,8 @@ namespace TextApp.Controllers
             }
         }
 
-        [HttpPut("groups")]
+        [HttpPut("profile/groups")]
+        [Authorize]
         public async Task<IActionResult> RemoveGroup([FromBody] List<Guid> groupIds)
         {
             var userId = Request.Cookies["user_id"];
@@ -60,5 +64,28 @@ namespace TextApp.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpPut("profile/username")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUsername([FromBody] string username)
+        {
+            var userId = Request.Cookies["user_id"];
+            //set as secret
+            var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+
+            var decryptedString = AesService.DecryptString(key, userId);
+
+            if (ModelState.IsValid && decryptedString != null)
+            {
+                await _profileRepo.UpdateUsernameAsync(decryptedString, username);
+
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
     }
 }

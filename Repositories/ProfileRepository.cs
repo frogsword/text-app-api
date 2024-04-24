@@ -1,5 +1,6 @@
 ﻿using TextApp.Data;
 using TextApp.Interfaces;
+using TextApp.Migrations;
 using TextApp.Models;
 
 namespace TextApp.Repositories
@@ -51,6 +52,15 @@ namespace TextApp.Repositories
             Profile profile = await _context.Profiles.FindAsync(userId);
 
             profile.Groups = groupIds.ToArray();
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateUsernameAsync(string userId, string username)
+        {
+            Profile profile = await _context.Profiles.FindAsync(userId);
+
+            profile.Username = username;
 
             await _context.SaveChangesAsync();
         }

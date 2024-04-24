@@ -25,7 +25,7 @@ namespace TextApp.Controllers
 
         [HttpGet]
         [Route("{groupId:guid}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetMessages([FromRoute] Guid groupId)
         {
             var messages = await _messageRepo.GetAsync(groupId);
