@@ -5,6 +5,7 @@ using TextApp.Interfaces;
 using TextApp.Models;
 using TextApp.Repositories;
 using Microsoft.AspNetCore.OutputCaching;
+using TextApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ builder.Services.AddScoped<IMessageInterface, MessageRepository>();
 builder.Services.AddScoped<IProfileInterface, ProfileRepository>();
 builder.Services.AddScoped<IGroupInterface, GroupRepository>();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +58,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:3000")
+    .WithOrigins("http://localhost:3000", "http://localhost:8000")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());
@@ -68,5 +71,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<TextHub>("/text");
 
 app.Run();

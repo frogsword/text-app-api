@@ -1,12 +1,19 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using TextApp.Models;
 
 namespace TextApp.Hubs
 {
     public class TextHub : Hub
     {
-        public async Task SendMessage(string sender, string receiver, string message)
+        public async Task JoinGroupRoom(string groupId)
         {
-            await Clients.All.SendAsync("ReceiveMessage", sender, receiver, message);
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+        }
+
+        //can i just call this function from message controller?
+        public async Task SendMessage(Message message)
+        {
+            await Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);
         }
     }
 }

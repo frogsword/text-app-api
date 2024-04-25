@@ -10,7 +10,6 @@ namespace TextApp.Dtos.MessageDtos
 
         public Guid SenderId { get; set; }
 
-        [Required]
         public string SenderUsername { get; set; }
 
         [Required]

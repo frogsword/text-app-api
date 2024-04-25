@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.SignalR;
 using TextApp.Data;
 using TextApp.Dtos.MessageDtos;
+using TextApp.Hubs;
 using TextApp.Interfaces;
 using TextApp.Mappers;
 using TextApp.Models;
@@ -16,13 +18,16 @@ namespace TextApp.Controllers
     public class MessageController : ControllerBase
     {
         private readonly IMessageInterface _messageRepo;
+        private readonly IHubContext<TextHub> _hub;
 
         public MessageController
         (
-            IMessageInterface messageRepo
+            IMessageInterface messageRepo,
+            IHubContext<TextHub> hub
         )
         {
             _messageRepo = messageRepo;
+            _hub = hub;
         }
 
         [HttpGet]
@@ -43,19 +48,20 @@ namespace TextApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userId = Request.Cookies["user_id"];
-                //set as secret
-                var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                //var userId = Request.Cookies["user_id"];
+                ////set as secret
+                //var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                //var decryptedString = AesService.DecryptString(key, userId);
+                //createMessageDto.SenderId = new Guid(decryptedString);
 
-                var decryptedString = AesService.DecryptString(key, userId);
-
-                createMessageDto.SenderId = new Guid(decryptedString);
+                //createMessageDto.SenderUsername = Request.Cookies["user_name"];
 
                 var messageModel = createMessageDto.ToMessageFromCreateDto();
+                var message = await _messageRepo.CreateAsync(messageModel);
 
-                await _messageRepo.CreateAsync(messageModel);
+                await _hub.Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);
 
-                return Ok(messageModel);
+                return Ok(message);
             }
             else
             {

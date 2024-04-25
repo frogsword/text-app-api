@@ -65,6 +65,8 @@ namespace TextApp.Controllers
                         //var user = await userManager.FindByIdAsync(decryptedString);
                         var user = await _profileRepo.GetAsync(decryptedString);
 
+                        Response.Cookies.Append("user_name", user.Username);
+
                         var userGroups = await _groupRepo.GetUserGroupsAsync(user.Groups.ToList());
 
                         var response = new
@@ -122,6 +124,7 @@ namespace TextApp.Controllers
             await signInManager.SignOutAsync();
 
             Response.Cookies.Delete("user_id");
+            Response.Cookies.Delete("user_name");
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
 
             return Ok();
