@@ -11,7 +11,8 @@ namespace TextApp.Mappers
             {
                 Body = messageDto.Body,
                 Sender = messageDto.SenderId,
-                GroupId = messageDto.GroupId
+                GroupId = messageDto.GroupId,
+                SenderUsername = messageDto.SenderUsername,
             };
         }
     }

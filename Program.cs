@@ -4,6 +4,7 @@ using TextApp.Data;
 using TextApp.Interfaces;
 using TextApp.Models;
 using TextApp.Repositories;
+using Microsoft.AspNetCore.OutputCaching;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
+
+builder.Services.AddOutputCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -58,6 +61,8 @@ app.UseCors(builder => builder
     .AllowCredentials());
 
 app.UseHttpsRedirection();
+
+app.UseOutputCache();
 
 app.UseAuthentication();
 app.UseAuthorization();

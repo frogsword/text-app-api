@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using TextApp.Data;
 using TextApp.Dtos.MessageDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
 using TextApp.Models;
+using TextApp.Services;
 
 namespace TextApp.Controllers
 {
@@ -26,9 +28,11 @@ namespace TextApp.Controllers
         [HttpGet]
         [Route("{groupId:guid}")]
         [Authorize]
-        public async Task<IActionResult> GetMessages([FromRoute] Guid groupId)
+        //[OutputCache]
+        public async Task<IActionResult> GetMessages([FromRoute] string groupId)
         {
-            var messages = await _messageRepo.GetAsync(groupId);
+            var guidGroupId = new Guid( groupId );
+            var messages = await _messageRepo.GetAsync(guidGroupId);
 
             return Ok(messages);
         }
@@ -39,6 +43,14 @@ namespace TextApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = Request.Cookies["user_id"];
+                //set as secret
+                var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+
+                var decryptedString = AesService.DecryptString(key, userId);
+
+                createMessageDto.SenderId = new Guid(decryptedString);
+
                 var messageModel = createMessageDto.ToMessageFromCreateDto();
 
                 await _messageRepo.CreateAsync(messageModel);

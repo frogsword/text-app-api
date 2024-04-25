@@ -22,6 +22,7 @@ namespace TextApp.Controllers
         private readonly IUserValidator<AppUser> userValidator;
         private readonly SignInManager<AppUser> signInManager;
         private readonly IProfileInterface _profileRepo;
+        private readonly IGroupInterface _groupRepo;
 
         public UserController
         (
@@ -31,6 +32,7 @@ namespace TextApp.Controllers
             IUserValidator<AppUser> userValid,
             SignInManager<AppUser> signinMgr,
             IProfileInterface profileRepo,
+            IGroupInterface groupRepo
         )
         {
             passwordHasher = passwordHash;
@@ -39,6 +41,7 @@ namespace TextApp.Controllers
             userValidator = userValid;
             signInManager = signinMgr;
             _profileRepo = profileRepo;
+            _groupRepo = groupRepo;
         }
 
         [HttpGet("authenticate")]
@@ -62,11 +65,14 @@ namespace TextApp.Controllers
                         //var user = await userManager.FindByIdAsync(decryptedString);
                         var user = await _profileRepo.GetAsync(decryptedString);
 
+                        var userGroups = await _groupRepo.GetUserGroupsAsync(user.Groups.ToList());
+
                         var response = new
                         {
+                            userId = user.UserId,
                             isAuthenticated = true,
                             name = user.Username,
-                            groups = user.Groups,
+                            groups = userGroups,
                             profilePicture = user.Picture,
                         };
 
@@ -113,6 +119,8 @@ namespace TextApp.Controllers
         [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
+            await signInManager.SignOutAsync();
+
             Response.Cookies.Delete("user_id");
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
 

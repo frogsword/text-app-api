@@ -8,8 +8,10 @@ namespace TextApp.Dtos.MessageDtos
         [MinLength(1)]
         public string Body { get; set; }
 
-        [Required]
         public Guid SenderId { get; set; }
+
+        [Required]
+        public string SenderUsername { get; set; }
 
         [Required]
         public Guid GroupId { get; set; }
