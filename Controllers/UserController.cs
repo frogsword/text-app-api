@@ -56,7 +56,7 @@ namespace TextApp.Controllers
                     var userId = Request.Cookies["user_id"];
 
                     //set as secret
-                    var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                    var key = Environment.GetEnvironmentVariable("AesKey");
                     var decryptedString = AesService.DecryptString(key, userId);
 
                     var user = await _profileRepo.GetAsync(decryptedString);
@@ -114,7 +114,7 @@ namespace TextApp.Controllers
                     if (result.Succeeded)
                     {
                         //set as secret
-                        var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                        var key = Environment.GetEnvironmentVariable("AesKey");
 
                         var encryptedId = AesService.EncryptString(key, appUser.Id);
                         Response.Cookies.Append("user_id", encryptedId);

@@ -30,7 +30,7 @@ namespace TextApp.Controllers
             {
                 var userId = Request.Cookies["user_id"];
                 //set as secret
-                var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                var key = Environment.GetEnvironmentVariable("AesKey");
 
                 var decryptedString = AesService.DecryptString(key, userId);
 
@@ -49,7 +49,7 @@ namespace TextApp.Controllers
         {
             var userId = Request.Cookies["user_id"];
             //set as secret
-            var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+            var key = Environment.GetEnvironmentVariable("AesKey");
 
             var decryptedString = AesService.DecryptString(key, userId);
 
@@ -71,7 +71,7 @@ namespace TextApp.Controllers
         {
             var userId = Request.Cookies["user_id"];
             //set as secret
-            var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+            var key = Environment.GetEnvironmentVariable("AesKey");
 
             var decryptedString = AesService.DecryptString(key, userId);
 
