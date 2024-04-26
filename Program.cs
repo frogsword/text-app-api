@@ -58,7 +58,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:3000", "http://localhost:8000")
+    .AllowAnyOrigin()
+    //.WithOrigins("http://localhost:3000", "http://localhost:8000", "https://cbheavin-textapp.azurewebsites.net")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());

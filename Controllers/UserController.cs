@@ -78,6 +78,8 @@ namespace TextApp.Controllers
                             profilePicture = user.Picture,
                         };
 
+                        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+
                         return Ok(response);
                     }
                     catch 
