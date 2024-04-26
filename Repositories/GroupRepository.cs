@@ -15,9 +15,15 @@ namespace TextApp.Repositories
             _context = context;
         }
 
-        public async Task<List<Group>> GetUserGroupsAsync(List<Guid> userGroupIds)
+        public async Task<List<Group>> GetUserGroupsAsync(List<Guid>? userGroupIds)
         {
             List<Group> groups = [];
+
+            if (userGroupIds.Count == 0)
+            {
+                return groups;
+            }
+
             for (int i = 0; i < userGroupIds.Count; i++)
             {
                Group group = await _context.Groups.FindAsync(userGroupIds.ElementAt(i));

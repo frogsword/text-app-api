@@ -55,18 +55,16 @@ namespace TextApp.Controllers
                 {
                     var userId = Request.Cookies["user_id"];
 
+                    //set as secret
+                    var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
+                    var decryptedString = AesService.DecryptString(key, userId);
+
+                    var user = await _profileRepo.GetAsync(decryptedString);
+
+                    Response.Cookies.Append("user_name", user.Username);
+
                     try
                     {
-                        //set as secret
-                        var key = "v5fcvt72y03urf7g06ety8bfrdq75wtc";
-
-                        var decryptedString = AesService.DecryptString(key, userId);
-
-                        //var user = await userManager.FindByIdAsync(decryptedString);
-                        var user = await _profileRepo.GetAsync(decryptedString);
-
-                        Response.Cookies.Append("user_name", user.Username);
-
                         var userGroups = await _groupRepo.GetUserGroupsAsync(user.Groups.ToList());
 
                         var response = new
@@ -82,7 +80,17 @@ namespace TextApp.Controllers
                     }
                     catch 
                     {
-                        return Ok(false);
+                        string[] userGroups = new string[0];
+                        var response = new
+                        {
+                            userId = user.UserId,
+                            isAuthenticated = true,
+                            name = user.Username,
+                            groups = userGroups,
+                            profilePicture = user.Picture,
+                        };
+
+                        return Ok(response);
                     }
                 }
                 else
