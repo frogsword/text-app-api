@@ -48,14 +48,6 @@ namespace TextApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var userId = Request.Cookies["user_id"];
-                ////set as secret
-                //var key = Environment.GetEnvironmentVariable("AesKey");
-                //var decryptedString = AesService.DecryptString(key, userId);
-                //createMessageDto.SenderId = new Guid(decryptedString);
-
-                //createMessageDto.SenderUsername = Request.Cookies["user_name"];
-
                 var messageModel = createMessageDto.ToMessageFromCreateDto();
                 var message = await _messageRepo.CreateAsync(messageModel);
 

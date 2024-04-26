@@ -23,6 +23,7 @@ namespace TextApp.Controllers
         private readonly SignInManager<AppUser> signInManager;
         private readonly IProfileInterface _profileRepo;
         private readonly IGroupInterface _groupRepo;
+        private readonly IConfiguration _config;
 
         public UserController
         (
@@ -32,7 +33,8 @@ namespace TextApp.Controllers
             IUserValidator<AppUser> userValid,
             SignInManager<AppUser> signinMgr,
             IProfileInterface profileRepo,
-            IGroupInterface groupRepo
+            IGroupInterface groupRepo,
+            IConfiguration config
         )
         {
             passwordHasher = passwordHash;
@@ -42,6 +44,7 @@ namespace TextApp.Controllers
             signInManager = signinMgr;
             _profileRepo = profileRepo;
             _groupRepo = groupRepo;
+            _config = config;
         }
 
         [HttpGet("authenticate")]
@@ -56,9 +59,8 @@ namespace TextApp.Controllers
                     var userId = Request.Cookies["user_id"];
 
                     //set as secret
-                    var key = Environment.GetEnvironmentVariable("AesKey");
+                    var key = _config["AesKey"];
                     var decryptedString = AesService.DecryptString(key, userId);
-
                     var user = await _profileRepo.GetAsync(decryptedString);
 
                     Response.Cookies.Append("user_name", user.Username);
@@ -114,7 +116,7 @@ namespace TextApp.Controllers
                     if (result.Succeeded)
                     {
                         //set as secret
-                        var key = Environment.GetEnvironmentVariable("AesKey");
+                        var key = _config["AesKey"];
 
                         var encryptedId = AesService.EncryptString(key, appUser.Id);
                         Response.Cookies.Append("user_id", encryptedId);

@@ -20,8 +20,7 @@ builder.Services.AddCors();
 builder.Services.AddOutputCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        //options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-    options.UseNpgsql(Environment.GetEnvironmentVariable("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration["DefaultConnection"]));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()

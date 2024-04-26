@@ -13,13 +13,16 @@ namespace TextApp.Controllers
     public class ProfileController : ControllerBase
     {
         private readonly IProfileInterface _profileRepo;
+        private readonly IConfiguration _config;
 
         public ProfileController
         (
-            IProfileInterface profileRepo
+            IProfileInterface profileRepo,
+            IConfiguration config
         )
         {
             _profileRepo = profileRepo;
+            _config = config;
         }
 
         [HttpGet("user")]
@@ -30,7 +33,7 @@ namespace TextApp.Controllers
             {
                 var userId = Request.Cookies["user_id"];
                 //set as secret
-                var key = Environment.GetEnvironmentVariable("AesKey");
+                var key = _config["AesKey"];
 
                 var decryptedString = AesService.DecryptString(key, userId);
 
@@ -49,7 +52,7 @@ namespace TextApp.Controllers
         {
             var userId = Request.Cookies["user_id"];
             //set as secret
-            var key = Environment.GetEnvironmentVariable("AesKey");
+            var key = _config["AesKey"];
 
             var decryptedString = AesService.DecryptString(key, userId);
 
@@ -71,7 +74,7 @@ namespace TextApp.Controllers
         {
             var userId = Request.Cookies["user_id"];
             //set as secret
-            var key = Environment.GetEnvironmentVariable("AesKey");
+            var key = _config["AesKey"];
 
             var decryptedString = AesService.DecryptString(key, userId);
 
