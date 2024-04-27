@@ -3,6 +3,7 @@ using TextApp.Data;
 using TextApp.Interfaces;
 using TextApp.Migrations;
 using TextApp.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TextApp.Repositories
 {
@@ -33,16 +34,32 @@ namespace TextApp.Repositories
             return groups;
         }
 
-        public async Task<Group> UpdateGroupAsync(Group groupModel)
+        public async Task<bool> AddOrRemoveUserAsync(Guid groupId, Guid userId, string action)
         {
-            var group = await _context.Groups.FindAsync(groupModel.Id);
+            Group group = await _context.Groups.FindAsync(groupId);
 
-            group.Members = groupModel.Members;
-            group.Name = groupModel.Name;
+            if (group == null) 
+            {
+                return false;
+            }
+
+            if (action == "remove" && group.Members.Contains(userId))
+            {
+                int indexToRemove = Array.IndexOf(group.Members, userId);
+                group.Members = group.Members.Where((z, x) => x != indexToRemove).ToArray();
+            }
+            else if (action == "add")
+            {
+                group.Members = [.. group.Members, userId];
+            }
+            else
+            {
+                return false;
+            }
 
             await _context.SaveChangesAsync();
 
-            return group;
+            return true;
         }
 
         public async Task<Group> CreateAsync(Group groupModel)

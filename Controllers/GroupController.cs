@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TextApp.Dtos.GroupDtos;
 using TextApp.Dtos.MessageDtos;
 using TextApp.Interfaces;
 using TextApp.Mappers;
+using TextApp.Migrations;
 using TextApp.Models;
 using TextApp.Services;
 
@@ -15,18 +17,23 @@ namespace TextApp.Controllers
     {
         private readonly IGroupInterface _groupRepo;
         private readonly IProfileInterface _profileRepo;
+        private readonly IConfiguration _config;
 
         public GroupController
         (
             IGroupInterface groupRepo,
-            IProfileInterface profileRepo
+            IProfileInterface profileRepo,
+            IConfiguration config
         )
         {
             _groupRepo = groupRepo;
             _profileRepo = profileRepo;
+            _config = config;
         }
 
+        //change to endpoint for changing group name
         [HttpPatch]
+        [Authorize]
         public async Task<IActionResult> GetUserGroups([FromBody] List<Guid> userGroupIds)
         {
             List<Group> groups = await _groupRepo.GetUserGroupsAsync(userGroupIds);
@@ -34,34 +41,68 @@ namespace TextApp.Controllers
             return Ok(groups);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateGroup([FromBody] CreateGroupDto groupDto)
+        [HttpPut("{groupId:guid}/users/{userId:guid}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateGroup([FromRoute] Guid groupId, [FromRoute] Guid userId, [FromBody] string action)
         {
-            Group group = groupDto.ToGroupFromCreateDto();
+            //action will either be 'remove' or 'add'
+            bool result = await _groupRepo.AddOrRemoveUserAsync(groupId, userId, action);
 
-            var result = await _groupRepo.UpdateGroupAsync(group);
+            if (result && action == "add")
+            {
+                //call profile repo to add group to user profile
+                await _profileRepo.AddGroupToProfileAsync(groupId, userId.ToString());
 
-            return Ok(result);
+                return Ok();
+            }
+            else if (result && action == "remove")
+            {
+                //call profile repo to add group to user profile
+                await _profileRepo.RemoveGroupFromProfileAsync(groupId, userId.ToString());
+
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateGroup([FromBody] CreateGroupDto createGroupDto)
         {
             if (ModelState.IsValid)
             {
+                var userId = Request.Cookies["user_id"];
+
                 var groupModel = createGroupDto.ToGroupFromCreateDto();
 
-                Group group = await _groupRepo.CreateAsync(groupModel);
+                //set as secret
+                var key = _config["AesKey"];
+                var decryptedString = AesService.DecryptString(key, userId);
+                var id = new Guid(decryptedString);
+                createGroupDto.Members = [.. createGroupDto.Members, id];
 
-                //add to profiles
-                Guid groupId = group.Id;
-                for (var i = 0; i < group.Members.Length; i++)
+                try
                 {
-                    string memberId = group.Members[i].ToString();
-                    await _profileRepo.AddGroupToProfileAsync(groupId, memberId);
-                }
+                    Group group = await _groupRepo.CreateAsync(groupModel);
 
-                return Ok(group);
+                    //add to profiles
+                    Guid groupId = group.Id;
+                    for (var i = 0; i < group.Members.Length; i++)
+                    {
+                        string memberId = group.Members[i].ToString();
+                        await _profileRepo.AddGroupToProfileAsync(groupId, memberId);
+                    }
+
+                    return Ok(group);
+                }
+                catch
+                {
+                    return BadRequest();
+                }
             }
             else
             {

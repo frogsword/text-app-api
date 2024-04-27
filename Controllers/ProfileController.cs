@@ -46,28 +46,6 @@ namespace TextApp.Controllers
             }
         }
 
-        [HttpPut("profile/groups")]
-        [Authorize]
-        public async Task<IActionResult> RemoveGroup([FromBody] List<Guid> groupIds)
-        {
-            var userId = Request.Cookies["user_id"];
-            //set as secret
-            var key = _config["AesKey"];
-
-            var decryptedString = AesService.DecryptString(key, userId);
-
-            if (ModelState.IsValid && decryptedString != null)
-            {
-                await _profileRepo.RemoveGroupFromProfileAsync(decryptedString, groupIds);
-
-                return Ok();
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
-        }
-
         [HttpPut("profile/username")]
         [Authorize]
         public async Task<IActionResult> UpdateUsername([FromBody] string username)

@@ -40,6 +40,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = ".AspNetCore.Identity.Application";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+    options.Cookie.SameSite = SameSiteMode.None;
 });
 
 builder.Services.AddScoped<IMessageInterface, MessageRepository>();
@@ -58,8 +61,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    //.WithOrigins("http://localhost:3000", "http://localhost:8000", "https://cbheavin-textapp.azurewebsites.net")
+    .WithOrigins("http://localhost:3000", "https://cbheavin-textapp.azurewebsites.net", "https://text-app-client.vercel.app", "https://text-app-client-3t61gxsfy-christophers-projects-b891b854.vercel.app")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());

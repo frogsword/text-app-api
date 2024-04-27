@@ -78,7 +78,7 @@ namespace TextApp.Controllers
                             profilePicture = user.Picture,
                         };
 
-                        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                        //Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
 
                         return Ok(response);
                     }
@@ -121,8 +121,10 @@ namespace TextApp.Controllers
                         var key = _config["AesKey"];
 
                         var encryptedId = AesService.EncryptString(key, appUser.Id);
+
                         Response.Cookies.Append("user_id", encryptedId);
-                        return Ok();
+
+                        return Ok("Logged in");
                     }
                 }
                 ModelState.AddModelError(nameof(loginDto.Email), "Login Failed: Invalid Email or password");

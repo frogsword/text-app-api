@@ -47,11 +47,12 @@ namespace TextApp.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveGroupFromProfileAsync(string userId, List<Guid> groupIds)
+        public async Task RemoveGroupFromProfileAsync(Guid groupId, string userId)
         {
             Profile profile = await _context.Profiles.FindAsync(userId);
 
-            profile.Groups = groupIds.ToArray();
+            int indexToRemove = Array.IndexOf(profile.Groups, groupId);
+            profile.Groups = profile.Groups.Where((z, x) => x != indexToRemove).ToArray();
 
             await _context.SaveChangesAsync();
         }
