@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextApp.Data;
+using TextApp.Dtos.GroupDtos;
 using TextApp.Interfaces;
-using TextApp.Migrations;
 using TextApp.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TextApp.Repositories
 {
@@ -16,24 +15,76 @@ namespace TextApp.Repositories
             _context = context;
         }
 
-        public async Task<List<Group>> GetUserGroupsAsync(List<Guid>? userGroupIds)
+        public async Task<GroupProfiles> GetGroupNameAndProfilesAsync(Guid groupId)
         {
-            List<Group> groups = [];
+            GroupProfiles result = new();
 
-            if (userGroupIds.Count == 0)
+            Group group = await _context.Groups.FindAsync(groupId);
+
+            if (group != null) 
+            {
+                Profile[] groupProfiles = [];
+
+                for (int i = 0; i < group.Members.Length; i++)
+                {
+                    Profile profile = await _context.Profiles.FindAsync(group.Members[i].ToString());
+
+                    if (profile != null)
+                    {
+                        groupProfiles = [.. groupProfiles, profile];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                result.Name = group.Name;
+                result.Profiles = groupProfiles;
+
+                return result;
+            }
+            else
+            {
+                return result;
+            }
+        }
+
+        public async Task<Group[]> GetUserGroupsAsync(Guid[]? groupIds)
+        {
+            Group[] groups = [];
+
+            if (groupIds == null)
             {
                 return groups;
             }
 
-            for (int i = 0; i < userGroupIds.Count; i++)
+            for (int i = 0; i < groupIds.Length; i++)
             {
-               Group group = await _context.Groups.FindAsync(userGroupIds.ElementAt(i));
-               groups = [.. groups, group];
+                Group group = await _context.Groups.FindAsync(groupIds.ElementAt(i));
+                groups = [.. groups, group];
             }
 
             return groups;
         }
 
+        public async Task<bool> ChangeGroupNameAsync(Guid groupId, string Name)
+        {
+            Group group = await _context.Groups.FindAsync(groupId);
+
+            if (group == null)
+            {
+                return false;
+            }
+            else
+            {
+                group.Name = Name;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+        }
+        
         public async Task<bool> AddOrRemoveUserAsync(Guid groupId, Guid userId, string action)
         {
             Group group = await _context.Groups.FindAsync(groupId);

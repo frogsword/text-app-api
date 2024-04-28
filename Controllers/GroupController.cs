@@ -30,15 +30,32 @@ namespace TextApp.Controllers
             _profileRepo = profileRepo;
             _config = config;
         }
+        
+        //endpoint to get group name, user names and associated ids
+        [HttpGet("{groupId:guid}")]
+        [Authorize]
+        public async Task<IActionResult> Get([FromRoute] Guid groupId)
+        {
+            var result = await _groupRepo.GetGroupNameAndProfilesAsync(groupId);
+
+            return Ok(result);
+        }
 
         //change to endpoint for changing group name
-        [HttpPatch]
+        [HttpPatch("{groupId:guid}")]
         [Authorize]
-        public async Task<IActionResult> GetUserGroups([FromBody] List<Guid> userGroupIds)
+        public async Task<IActionResult> GetUserGroups([FromRoute] Guid groupId, [FromBody] string name)
         {
-            List<Group> groups = await _groupRepo.GetUserGroupsAsync(userGroupIds);
+            bool succeeded = await _groupRepo.ChangeGroupNameAsync(groupId, name);
 
-            return Ok(groups);
+            if (succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPut("{groupId:guid}/users/{userId:guid}")]

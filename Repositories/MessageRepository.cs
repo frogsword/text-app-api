@@ -28,5 +28,22 @@ namespace TextApp.Repositories
 
             return messageModel;
         }
+
+        public async Task<bool> DeleteAsync(Guid messageId)
+        {
+            Message message = await _context.Messages.FirstOrDefaultAsync(x => x.Id == messageId);
+
+            if (message != null)
+            {
+                message.IsDeleted = true;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

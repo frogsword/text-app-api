@@ -44,7 +44,7 @@ namespace TextApp.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateMessageDto createMessageDto)
+        public async Task<IActionResult> Create([FromBody] CreateMessageDto createMessageDto)
         {
             if (ModelState.IsValid)
             {
@@ -58,6 +58,22 @@ namespace TextApp.Controllers
             else
             {
                 return BadRequest(ModelState);
+            }
+        }
+
+        [HttpDelete("{messageId:guid}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteMessage([FromRoute] Guid messageId)
+        {
+            bool succeeded = await _messageRepo.DeleteAsync(messageId);
+
+            if (succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
             }
         }
     }

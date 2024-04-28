@@ -61,7 +61,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:3000", "https://cbheavin-textapp.azurewebsites.net", "https://text-app-client.vercel.app", "https://text-app-client-3t61gxsfy-christophers-projects-b891b854.vercel.app")
+    .WithOrigins("http://localhost:3000", "https://cbheavin-textapp.azurewebsites.net", "https://text-app-client.vercel.app", "https://text-app-client-3t61gxsfy-christophers-projects-b891b854.vercel.app", "https://text-app-client-git-master-christophers-projects-b891b854.vercel.app/")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());

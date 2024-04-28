@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using TextApp.Dtos.ProfileDtos;
 using TextApp.Dtos.UserDtos;
 using TextApp.Interfaces;
@@ -65,37 +66,18 @@ namespace TextApp.Controllers
 
                     Response.Cookies.Append("user_name", user.Username);
 
-                    try
+                    Group[] userGroups = await _groupRepo.GetUserGroupsAsync(user.Groups);
+
+                    var response = new
                     {
-                        var userGroups = await _groupRepo.GetUserGroupsAsync(user.Groups.ToList());
+                        userId = user.UserId,
+                        isAuthenticated = true,
+                        name = user.Username,
+                        groups = userGroups,
+                        profilePicture = user.Picture,
+                    };
 
-                        var response = new
-                        {
-                            userId = user.UserId,
-                            isAuthenticated = true,
-                            name = user.Username,
-                            groups = userGroups,
-                            profilePicture = user.Picture,
-                        };
-
-                        //Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
-
-                        return Ok(response);
-                    }
-                    catch 
-                    {
-                        string[] userGroups = new string[0];
-                        var response = new
-                        {
-                            userId = user.UserId,
-                            isAuthenticated = true,
-                            name = user.Username,
-                            groups = userGroups,
-                            profilePicture = user.Picture,
-                        };
-
-                        return Ok(response);
-                    }
+                    return Ok(response);
                 }
                 else
                 {

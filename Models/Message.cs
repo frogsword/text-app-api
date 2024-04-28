@@ -11,5 +11,6 @@ namespace TextApp.Models
         public Guid GroupId { get; set; }
         public string Body { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public bool IsDeleted { get; set; } = false;
     }
 }
