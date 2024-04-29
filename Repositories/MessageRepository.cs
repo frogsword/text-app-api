@@ -29,7 +29,26 @@ namespace TextApp.Repositories
             return messageModel;
         }
 
-        public async Task<bool> DeleteAsync(Guid messageId)
+        public async Task<List<Message>> UpdateAsync(Guid messageId, string body)
+        {
+            Message message = await _context.Messages.FirstOrDefaultAsync(x => x.Id == messageId);
+
+            if (message != null)
+            {
+                message.Body = body;
+                await _context.SaveChangesAsync();
+
+                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).ToListAsync();
+
+                return messages;
+            }
+            else
+            {
+                return [];
+            }
+        }
+
+        public async Task<List<Message>> DeleteAsync(Guid messageId)
         {
             Message message = await _context.Messages.FirstOrDefaultAsync(x => x.Id == messageId);
 
@@ -38,11 +57,13 @@ namespace TextApp.Repositories
                 message.IsDeleted = true;
                 await _context.SaveChangesAsync();
 
-                return true;
+                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).ToListAsync();
+
+                return messages;
             }
             else
             {
-                return false;
+                return [];
             }
         }
     }

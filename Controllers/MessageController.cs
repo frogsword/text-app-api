@@ -61,14 +61,41 @@ namespace TextApp.Controllers
             }
         }
 
+        [HttpPut("{messageId:guid}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMessage([FromRoute] Guid messageId, [FromBody] string body)
+        {
+            if (ModelState.IsValid)
+            {
+                var messages = await _messageRepo.UpdateAsync(messageId, body);
+
+                if (messages.Count > 0)
+                {
+                    await _hub.Clients.Group(messages[0].GroupId.ToString()).SendAsync("UpdateGroupMessages", messages);
+
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
         [HttpDelete("{messageId:guid}")]
         [Authorize]
         public async Task<IActionResult> DeleteMessage([FromRoute] Guid messageId)
         {
-            bool succeeded = await _messageRepo.DeleteAsync(messageId);
+            var messages = await _messageRepo.DeleteAsync(messageId);
 
-            if (succeeded)
+            if (messages.Count > 0)
             {
+                await _hub.Clients.Group(messages[0].GroupId.ToString()).SendAsync("UpdateGroupMessages", messages);
+
                 return Ok();
             }
             else

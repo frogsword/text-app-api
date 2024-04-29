@@ -6,6 +6,7 @@ namespace TextApp.Interfaces
     {
         Task<List<Message>> GetAsync(Guid groupId);
         Task<Message> CreateAsync(Message messageModel);
-        Task<bool> DeleteAsync(Guid messageId);
+        Task<List<Message>> UpdateAsync(Guid messageId, string body);
+        Task<List<Message>> DeleteAsync(Guid messageId);
     }
 }
