@@ -16,7 +16,7 @@ namespace TextApp.Repositories
 
         public async Task<List<Message>> GetAsync(Guid groupId)
         {
-            var messages = await _context.Messages.Where(m => m.GroupId == groupId).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.GroupId == groupId).OrderBy(m => m.CreatedAt).ToListAsync();
 
             return messages;
         }
@@ -38,7 +38,7 @@ namespace TextApp.Repositories
                 message.Body = body;
                 await _context.SaveChangesAsync();
 
-                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).ToListAsync();
+                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).OrderBy(m => m.CreatedAt).ToListAsync();
 
                 return messages;
             }
@@ -57,7 +57,7 @@ namespace TextApp.Repositories
                 message.IsDeleted = true;
                 await _context.SaveChangesAsync();
 
-                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).ToListAsync();
+                var messages = await _context.Messages.Where(m => m.GroupId == message.GroupId).OrderBy(m => m.CreatedAt).ToListAsync();
 
                 return messages;
             }
