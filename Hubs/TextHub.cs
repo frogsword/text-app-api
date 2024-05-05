@@ -10,7 +10,6 @@ namespace TextApp.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
         }
 
-        //can i just call this function from message controller?
         public async Task SendMessage(Message message)
         {
             await Clients.Group(message.GroupId.ToString()).SendAsync("ReceiveMessage", message);

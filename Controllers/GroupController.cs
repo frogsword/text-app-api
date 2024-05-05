@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Azure;
 using TextApp.Dtos.GroupDtos;
 using TextApp.Dtos.MessageDtos;
 using TextApp.Interfaces;
@@ -96,14 +97,14 @@ namespace TextApp.Controllers
 
                 var groupModel = createGroupDto.ToGroupFromCreateDto();
 
-                //set as secret
-                var key = _config["AesKey"];
-                var decryptedString = AesService.DecryptString(key, userId);
-                var id = new Guid(decryptedString);
-                createGroupDto.Members = [.. createGroupDto.Members, id];
-
-                try
+                if (Request.Cookies["user_id"] != null)
                 {
+                    //set as secret
+                    var key = _config["AesKey"];
+                    var decryptedString = AesService.DecryptString(key, userId);
+                    var id = new Guid(decryptedString);
+                    groupModel.Members = [.. createGroupDto.Members, id];
+
                     Group group = await _groupRepo.CreateAsync(groupModel);
 
                     //add to profiles
@@ -116,7 +117,7 @@ namespace TextApp.Controllers
 
                     return Ok(group);
                 }
-                catch
+                else
                 {
                     return BadRequest();
                 }
